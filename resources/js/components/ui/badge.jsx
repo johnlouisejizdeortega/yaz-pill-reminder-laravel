@@ -1,25 +1,24 @@
-import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
-const badgeVariants = cva(
-  "inline-flex items-center border px-2.5 py-0.5 text-xs font-semibold font-mono tracking-wider transition-colors",
-  {
-    variants: {
-      variant: {
-        default: "border-transparent bg-primary text-primary-foreground",
-        secondary: "border-transparent bg-secondary text-secondary-foreground",
-        destructive: "border-transparent bg-destructive text-destructive-foreground",
-        outline: "text-foreground border-foreground",
-        warning: "border-transparent bg-amber-100 text-amber-800",
-        success: "border-transparent bg-green-100 text-green-800",
-      },
-    },
-    defaultVariants: { variant: "default" },
-  }
-);
+function Badge({ className, variant = "default", ...props }) {
+  const variants = {
+    default:     "bg-[#007AFF]/15 text-[#007AFF] border border-[#007AFF]/20",
+    secondary:   "bg-black/6 text-black/50 border border-black/8",
+    destructive: "bg-[#FF3B30]/12 text-[#FF3B30] border border-[#FF3B30]/20",
+    success:     "bg-[#34C759]/15 text-[#34C759] border border-[#34C759]/20",
+    warning:     "bg-[#FF9500]/15 text-[#FF9500] border border-[#FF9500]/20",
+  };
 
-function Badge({ className, variant, ...props }) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />;
+  return (
+    <div
+      className={cn(
+        "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+        variants[variant] || variants.default,
+        className
+      )}
+      {...props}
+    />
+  );
 }
 
-export { Badge, badgeVariants };
+export { Badge };

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,27 +23,30 @@ function save(o) { localStorage.setItem("yazv4", JSON.stringify(o)); }
 function todayStr() { return new Date().toISOString().split("T")[0]; }
 
 const pageVariants = {
-  initial: { opacity: 0, x: 40 },
-  animate: { opacity: 1, x: 0 },
-  exit:    { opacity: 0, x: -40 },
+  initial: { opacity: 0, y: 24, scale: 0.97 },
+  animate: { opacity: 1, y: 0,  scale: 1 },
+  exit:    { opacity: 0, y: -24, scale: 0.97 },
 };
-const pageTransition = { type: "tween", duration: 0.28, ease: "easeInOut" };
+const pageTransition = { type: "spring", stiffness: 300, damping: 30 };
 
 function Field({ label, error, children }) {
   return (
-    <div className="space-y-1.5 mb-4">
-      <Label>{label}</Label>
+    <div className="mb-4">
+      <Label className="mb-2 block">{label}</Label>
       {children}
-      {error && <p className="text-[11px] text-destructive mt-1">{error}</p>}
+      {error && (
+        <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
+          className="text-[11px] text-[#FF3B30] mt-1.5 font-medium">{error}</motion.p>
+      )}
     </div>
   );
 }
 
 function Row({ label, value }) {
   return (
-    <div className="flex justify-between items-center border-b border-border py-2.5 text-sm">
-      <span className="text-muted-foreground text-xs tracking-wider uppercase">{label}</span>
-      <span className="font-semibold text-xs">{value}</span>
+    <div className="flex justify-between items-center py-3 border-b border-black/5 last:border-0">
+      <span className="text-xs font-medium text-black/40 uppercase tracking-wider">{label}</span>
+      <span className="text-sm font-semibold text-black/80">{value}</span>
     </div>
   );
 }
@@ -54,24 +56,24 @@ function PillCell({ d, dayNum, taken }) {
   const t = taken[d];
   const isToday = d === dayNum && t === undefined;
 
-  let bg = "bg-secondary", border = "border border-border";
-  let textColor = placebo ? "text-amber-500" : "text-muted-foreground";
-  let label = d;
+  let cls = "w-9 h-9 flex items-center justify-center text-[11px] font-semibold rounded-full cursor-default select-none transition-all";
 
-  if (t === true)  { bg = "bg-primary";  border = "border border-primary";       textColor = "text-primary-foreground"; label = "✓"; }
-  if (t === false) { bg = "bg-white";    border = "border-2 border-destructive"; textColor = "text-destructive";        label = "✗"; }
-  if (isToday)     { bg = "bg-white";    border = "border-2 border-primary";     textColor = "text-primary"; }
+  if (t === true)  cls += " bg-[#007AFF] text-white shadow-sm";
+  else if (t === false) cls += " bg-[#FF3B30]/12 text-[#FF3B30] border border-[#FF3B30]/30";
+  else if (isToday) cls += " bg-white/80 text-[#007AFF] border-2 border-[#007AFF] pulse-ring";
+  else if (placebo) cls += " bg-[#FF9500]/12 text-[#FF9500]";
+  else cls += " bg-black/5 text-black/30";
 
   return (
     <motion.div
       layout
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: t !== undefined ? [1, 1.2, 1] : 1, opacity: 1 }}
-      transition={{ duration: 0.3, delay: d * 0.01 }}
-      whileHover={{ scale: 1.15, zIndex: 10 }}
-      className={`w-8 h-8 flex items-center justify-center text-[10px] rounded-sm cursor-default select-none ${bg} ${border} ${textColor} ${d === dayNum ? "font-bold" : "font-normal"}`}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: t !== undefined ? [1, 1.25, 1] : 1, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20, delay: d * 0.012 }}
+      whileHover={{ scale: 1.15 }}
+      className={cls}
     >
-      {label}
+      {t === true ? "✓" : t === false ? "✗" : d}
     </motion.div>
   );
 }
@@ -79,14 +81,17 @@ function PillCell({ d, dayNum, taken }) {
 function Grid({ total, dayNum, taken }) {
   return (
     <div className="mt-5">
-      <p className="text-[10px] tracking-widest uppercase text-muted-foreground mb-3 pb-2 border-b border-border">— Pill Tracker —</p>
-      <div className="flex flex-wrap gap-1.5">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-black/30 mb-3">Pill Tracker</p>
+      <div className="flex flex-wrap gap-2">
         {Array.from({ length: total }, (_, i) => i + 1).map(d => (
           <PillCell key={d} d={d} dayNum={dayNum} taken={taken} />
         ))}
       </div>
-      <div className="mt-2 text-[10px] text-muted-foreground leading-relaxed">
-        ■ taken &nbsp;|&nbsp; ✗ missed &nbsp;|&nbsp; □ today &nbsp;|&nbsp; <span className="text-amber-500">■</span> placebo (25–28)
+      <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-black/35 font-medium">
+        <span><span className="text-[#007AFF]">●</span> Taken</span>
+        <span><span className="text-[#FF3B30]">●</span> Missed</span>
+        <span><span className="text-[#007AFF] opacity-50">○</span> Today</span>
+        <span><span className="text-[#FF9500]">●</span> Placebo (25–28)</span>
       </div>
     </div>
   );
@@ -116,7 +121,6 @@ export default function App() {
     if (hh === 20 && mm === 30 && ss === 0) setAlarm(true);
   }, [now, cfg]);
 
-  // Sync logs from server on mount
   useEffect(() => {
     if (!cfg.email) return;
     fetch(`/api/status/${encodeURIComponent(cfg.email)}`)
@@ -161,7 +165,7 @@ export default function App() {
       if (!res.ok) throw new Error(data.message || "Failed");
       const nc = { name: f.name, email: f.email, startDate: f.startDate, endDate: f.endDate, taken: {} };
       setCfg(nc); setTaken({}); save(nc);
-      toast.success("✅ Active! Welcome email sent.");
+      toast.success("Reminders activated! Check your email 💊");
       setPage("dash");
     } catch (e) {
       toast.error(`Error: ${e.message}`);
@@ -184,7 +188,7 @@ export default function App() {
         save({ ...cfg, taken: updated });
         return updated;
       });
-      toast(yes ? "Logged: Taken ✓" : "Logged: Missed ✗");
+      toast(yes ? "✓ Logged as taken" : "✗ Logged as missed");
     } catch {
       toast.error("Failed to log. Try again.");
     }
@@ -207,28 +211,38 @@ export default function App() {
   const todayTaken = taken[dn];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-8">
-      <div className="text-center mb-7 w-full max-w-md">
-        <p className="text-[10px] tracking-widest uppercase text-muted-foreground mb-1">Yaz · Drospirenone + Ethinylestradiol</p>
-        <h1 className="text-3xl font-bold tracking-tight">💊 Pill Alarm</h1>
-        <p className="text-xs text-muted-foreground mt-1">8:30 PM Daily Reminder</p>
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10">
+
+      {/* Header */}
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 28 }}
+        className="text-center mb-8 w-full max-w-sm">
+        <motion.div
+          animate={{ rotate: [0, -5, 5, -3, 3, 0] }}
+          transition={{ repeat: Infinity, duration: 4, repeatDelay: 3 }}
+          className="text-5xl mb-3">💊</motion.div>
+        <h1 className="text-3xl font-bold tracking-tight text-black/85">Pill Alarm</h1>
+        <p className="text-sm text-black/40 mt-1 font-medium">Yaz · 8:30 PM Daily</p>
+
         {cfg.email && (
           <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            className="mt-3 inline-block border-2 border-primary px-6 py-1.5 text-xl font-bold tracking-widest">
-            {timeStr}
+            className="mt-4 inline-block glass rounded-2xl px-6 py-2.5">
+            <span className="text-2xl font-bold tracking-widest text-black/80 tabular-nums">{timeStr}</span>
           </motion.div>
         )}
-      </div>
+      </motion.div>
 
-      <div className="w-full max-w-md">
+      {/* Pages */}
+      <div className="w-full max-w-sm">
         <AnimatePresence mode="wait">
 
+          {/* Setup */}
           {page === "s1" && (
             <motion.div key="s1" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
               <Card>
                 <CardHeader>
-                  <CardDescription className="text-[10px] tracking-widest uppercase">Setup</CardDescription>
-                  <CardTitle className="text-base tracking-wide">Schedule & Email</CardTitle>
+                  <CardDescription>Setup</CardDescription>
+                  <CardTitle>Schedule & Email</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Field label="Your Name" error={errs.name}>
@@ -240,37 +254,46 @@ export default function App() {
                   <Field label="Pill End Date" error={errs.endDate}>
                     <Input type="date" {...fld("endDate")} />
                   </Field>
-                  <Field label="Reminder Email Address" error={errs.email}>
+                  <Field label="Reminder Email" error={errs.email}>
                     <Input type="email" placeholder="you@gmail.com" {...fld("email")} />
                   </Field>
-                  <p className="text-[10px] text-muted-foreground pb-3 leading-relaxed">
-                    Emails sent at 8:00 · 8:10 · 8:20 · 8:30 PM daily — even when this tab is closed.
+                  <p className="text-[11px] text-black/35 mb-5 leading-relaxed font-medium">
+                    Reminders sent at 8:00, 8:10, 8:20 & 8:30 PM daily — even when this tab is closed.
                   </p>
-                  <Button className="w-full" onClick={activate} disabled={busy}>
-                    {busy ? "Activating..." : "Activate Reminder →"}
-                  </Button>
+                  <button className="ios-btn-primary w-full h-12" onClick={activate} disabled={busy}>
+                    {busy ? "Activating…" : "Activate Reminder"}
+                  </button>
                 </CardContent>
               </Card>
             </motion.div>
           )}
 
+          {/* Dashboard */}
           {page === "dash" && (
             <motion.div key="dash" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+
+              {/* Alarm overlay */}
               <AnimatePresence>
                 {alarm && (
-                  <motion.div key="alarm" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.8, opacity: 0 }} transition={{ type: "spring", stiffness: 300, damping: 24 }}>
-                    <Card className="border-2 border-primary mb-5">
-                      <CardContent className="pt-6 text-center">
-                        <motion.div animate={{ rotate: [-8, 8, -8, 8, 0] }}
-                          transition={{ repeat: Infinity, duration: 0.6, repeatDelay: 1.5 }} className="text-5xl mb-3">🔔</motion.div>
-                        <p className="text-3xl font-bold tracking-widest mb-1">8:30 PM</p>
-                        <p className="text-sm text-muted-foreground mb-1">Time to take your Yaz pill</p>
-                        <p className="text-xs text-muted-foreground mb-5">Day {dn} of {tot}</p>
-                        <p className="text-xs font-bold tracking-widest mb-3 uppercase">Did you take your pill?</p>
+                  <motion.div key="alarm"
+                    initial={{ scale: 0.85, opacity: 0, y: 20 }}
+                    animate={{ scale: 1,    opacity: 1, y: 0 }}
+                    exit={{    scale: 0.85, opacity: 0, y: 20 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                    className="mb-5">
+                    <Card>
+                      <CardContent className="pt-8 pb-7 text-center">
+                        <motion.div
+                          animate={{ rotate: [-12, 12, -12, 12, -6, 6, 0] }}
+                          transition={{ repeat: Infinity, duration: 0.7, repeatDelay: 1.8 }}
+                          className="text-6xl mb-4">🔔</motion.div>
+                        <p className="text-4xl font-bold tracking-tight text-black/85 mb-1">8:30 PM</p>
+                        <p className="text-sm text-black/45 font-medium mb-1">Time to take your Yaz pill</p>
+                        <p className="text-xs text-black/30 mb-6">Day {dn} of {tot}</p>
+                        <p className="text-xs font-bold uppercase tracking-widest text-black/35 mb-4">Did you take your pill?</p>
                         <div className="flex gap-3">
-                          <Button className="flex-1 text-base h-12" onClick={() => answer(true)}>✓ Yes</Button>
-                          <Button variant="outline" className="flex-1 text-base h-12 border-2" onClick={() => answer(false)}>✗ No</Button>
+                          <button className="ios-btn-primary flex-1 h-13 py-3" onClick={() => answer(true)}>✓ Yes</button>
+                          <button className="ios-btn-danger flex-1 h-13 py-3" onClick={() => answer(false)}>✗ No</button>
                         </div>
                       </CardContent>
                     </Card>
@@ -278,48 +301,57 @@ export default function App() {
                 )}
               </AnimatePresence>
 
+              {/* Dashboard card */}
               {!alarm && (
                 <Card>
                   <CardHeader>
-                    <CardDescription className="text-[10px] tracking-widest uppercase">Dashboard</CardDescription>
-                    <CardTitle className="text-base tracking-wide">Your Progress</CardTitle>
+                    <CardDescription>Dashboard</CardDescription>
+                    <CardTitle>Your Progress</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Row label="Name"  value={cfg.name} />
                     <Row label="Start" value={formatDate(cfg.startDate)} />
                     <Row label="End"   value={formatDate(cfg.endDate)} />
-                    <Row label="Email" value={<span className="text-[11px]">{cfg.email}</span>} />
-                    <Row label="Today" value={`Day ${dn} / ${tot}`} />
-                    <div className="flex justify-between items-center border-b border-border py-2.5">
-                      <span className="text-muted-foreground text-xs tracking-wider uppercase">Today's Status</span>
-                      <Badge variant={todayTaken === true ? "default" : todayTaken === false ? "destructive" : "secondary"}>
-                        {todayTaken === true ? "✓ Taken" : todayTaken === false ? "✗ Missed" : "— Pending —"}
+                    <Row label="Email" value={<span className="text-xs">{cfg.email}</span>} />
+                    <Row label="Today" value={`Day ${dn} of ${tot}`} />
+                    <div className="flex justify-between items-center py-3 border-b border-black/5">
+                      <span className="text-xs font-medium text-black/40 uppercase tracking-wider">Status</span>
+                      <Badge variant={todayTaken === true ? "success" : todayTaken === false ? "destructive" : "secondary"}>
+                        {todayTaken === true ? "✓ Taken" : todayTaken === false ? "✗ Missed" : "Pending"}
                       </Badge>
                     </div>
 
+                    {/* Progress bar */}
                     <div className="mt-4 mb-1">
-                      <div className="flex justify-between text-[10px] text-muted-foreground mb-1.5">
+                      <div className="flex justify-between text-[11px] font-semibold text-black/35 mb-2">
                         <span>Progress</span><span>{Math.round(pct)}%</span>
                       </div>
-                      <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-                        <motion.div className="h-full bg-primary rounded-full" initial={{ width: 0 }}
-                          animate={{ width: `${pct}%` }} transition={{ type: "spring", stiffness: 60, damping: 18 }} />
+                      <div className="relative h-2 w-full overflow-hidden rounded-full bg-black/6">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ background: "linear-gradient(90deg, #007AFF, #34C8FF)" }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ type: "spring", stiffness: 60, damping: 18 }}
+                        />
                       </div>
                     </div>
 
                     <Grid total={tot} dayNum={dn} taken={taken} />
 
                     {todayTaken === undefined && (
-                      <div className="mt-6 border-t border-border pt-4">
-                        <p className="text-[10px] tracking-widest uppercase text-muted-foreground mb-3">— Log Today's Pill —</p>
+                      <div className="mt-6 pt-5 border-t border-black/5">
+                        <p className="text-[10px] font-semibold uppercase tracking-widest text-black/30 mb-3">Log Today's Pill</p>
                         <div className="flex gap-3">
-                          <Button className="flex-1 h-11 text-sm" onClick={() => answer(true)}>✓ Yes</Button>
-                          <Button variant="outline" className="flex-1 h-11 text-sm border-2" onClick={() => answer(false)}>✗ No</Button>
+                          <button className="ios-btn-primary flex-1 py-3" onClick={() => answer(true)}>✓ Taken</button>
+                          <button className="ios-btn-danger flex-1 py-3" onClick={() => answer(false)}>✗ Missed</button>
                         </div>
                       </div>
                     )}
 
-                    <Button variant="outline" className="w-full mt-5" onClick={reset}>Reset / Change Setup</Button>
+                    <button className="ios-btn-secondary w-full py-3 mt-4 text-sm" onClick={reset}>
+                      Reset / Change Setup
+                    </button>
                   </CardContent>
                 </Card>
               )}

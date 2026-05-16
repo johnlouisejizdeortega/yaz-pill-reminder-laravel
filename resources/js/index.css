@@ -1,39 +1,114 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(0 0% 3.9%);
-  --color-card: hsl(0 0% 100%);
-  --color-card-foreground: hsl(0 0% 3.9%);
-  --color-border: hsl(0 0% 89.8%);
-  --color-input: hsl(0 0% 89.8%);
-  --color-ring: hsl(0 0% 3.9%);
-  --color-primary: hsl(0 0% 9%);
-  --color-primary-foreground: hsl(0 0% 98%);
-  --color-secondary: hsl(0 0% 96.1%);
-  --color-secondary-foreground: hsl(0 0% 9%);
-  --color-muted: hsl(0 0% 96.1%);
-  --color-muted-foreground: hsl(0 0% 45.1%);
-  --color-accent: hsl(0 0% 96.1%);
-  --color-accent-foreground: hsl(0 0% 9%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-destructive-foreground: hsl(0 0% 98%);
-  --color-amber-100: hsl(48 96.5% 88.8%);
-  --color-amber-500: hsl(37.7 92.1% 50.2%);
-  --color-amber-800: hsl(21.7 77.8% 26.5%);
-  --color-green-100: hsl(149.3 80.4% 90%);
-  --color-green-800: hsl(154.4 61.4% 24.9%);
-  --radius: 0.5rem;
-  --font-mono: 'Courier New', Courier, monospace;
+  --color-background: #f0f4ff;
+  --color-foreground: rgba(0, 0, 0, 0.85);
+  --color-card: rgba(255, 255, 255, 0.65);
+  --color-card-foreground: rgba(0, 0, 0, 0.85);
+  --color-border: rgba(255, 255, 255, 0.75);
+  --color-input: rgba(255, 255, 255, 0.4);
+  --color-ring: #007AFF;
+  --color-primary: #007AFF;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: rgba(255, 255, 255, 0.5);
+  --color-secondary-foreground: rgba(0, 0, 0, 0.6);
+  --color-muted: rgba(0, 0, 0, 0.04);
+  --color-muted-foreground: rgba(0, 0, 0, 0.45);
+  --color-destructive: #FF3B30;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #34C759;
+  --color-warning: #FF9500;
+  --radius: 1rem;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
 }
 
 @layer base {
-  * {
-    border-color: var(--color-border);
-  }
+  * { box-sizing: border-box; }
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
+    background: linear-gradient(135deg, #ddeeff 0%, #eeddf8 40%, #f8ddee 100%);
+    min-height: 100vh;
+    color: rgba(0, 0, 0, 0.85);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .glass {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.08),
+      0 2px 8px rgba(0, 0, 0, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  }
+
+  .glass-input {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.2s ease;
+  }
+  .glass-input:focus {
+    background: rgba(255, 255, 255, 0.85);
+    border-color: #007AFF;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.18);
+    outline: none;
+  }
+
+  .ios-btn-primary {
+    background: #007AFF;
+    color: #fff;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.2px;
+    transition: all 0.15s ease;
+    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.35);
+    border: none;
+    cursor: pointer;
+  }
+  .ios-btn-primary:hover { background: #0062CC; box-shadow: 0 6px 18px rgba(0, 122, 255, 0.45); }
+  .ios-btn-primary:active { transform: scale(0.97); }
+  .ios-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .ios-btn-secondary {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #007AFF;
+    border: 1px solid rgba(0, 122, 255, 0.25);
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .ios-btn-secondary:hover { background: rgba(255, 255, 255, 0.8); }
+  .ios-btn-secondary:active { transform: scale(0.97); }
+
+  .ios-btn-danger {
+    background: rgba(255, 59, 48, 0.12);
+    color: #FF3B30;
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+  .ios-btn-danger:hover { background: rgba(255, 59, 48, 0.2); }
+  .ios-btn-danger:active { transform: scale(0.97); }
+
+  .pulse-ring {
+    animation: pulse-ring 2s ease-out infinite;
+  }
+  @keyframes pulse-ring {
+    0%   { box-shadow: 0 0 0 0   rgba(0, 122, 255, 0.45); }
+    70%  { box-shadow: 0 0 0 10px rgba(0, 122, 255, 0); }
+    100% { box-shadow: 0 0 0 0   rgba(0, 122, 255, 0); }
   }
 }
