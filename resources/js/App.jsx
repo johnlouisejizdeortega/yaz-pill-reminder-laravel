@@ -334,7 +334,7 @@ export default function App() {
                       <Row label="Name"  value={cfg.name} />
                       <Row label="Start" value={formatDate(cfg.startDate)} />
                       <Row label="End"   value={formatDate(cfg.endDate)} />
-                      <Row label="Email" value={<span className="text-[9px] break-all">{cfg.email}</span>} />
+                      <Row label="Email" value={<span className="text-[9px] break-words">{cfg.email}</span>} />
                       <Row label="Today" value={`Day ${dn} of ${tot}`} />
                       <div className="flex justify-between items-center py-1">
                         <span className="text-[9px] font-semibold text-black/35 uppercase tracking-wider">Status</span>
