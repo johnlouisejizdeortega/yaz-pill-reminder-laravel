@@ -284,7 +284,7 @@ export default function App() {
                 <p className="text-[10px] text-black/30 mb-3 leading-snug font-medium">
                   Reminders sent at 8:00, 8:10, 8:20 &amp; 8:30 PM daily — even when this tab is closed.
                 </p>
-                <button className="btn-primary w-full h-9 text-xs" onClick={activate} disabled={busy}>
+                <button className="btn-primary w-full text-sm" onClick={activate} disabled={busy}>
                   {busy ? "Activating…" : "Activate Reminder"}
                 </button>
               </motion.div>
@@ -318,8 +318,8 @@ export default function App() {
                       <p className="text-[10px] text-black/26 mb-3">Day {dn} of {tot}</p>
                       <p className="text-[9px] font-bold uppercase tracking-widest text-black/30 mb-2">Did you take it?</p>
                       <div className="flex gap-2">
-                        <button className="btn-primary flex-1 py-2 text-xs flex items-center justify-center gap-1" onClick={() => answer(true)}><Check size={12} strokeWidth={3} />Yes</button>
-                        <button className="btn-danger  flex-1 py-2 text-xs flex items-center justify-center gap-1" onClick={() => answer(false)}><X     size={12} strokeWidth={3} />No</button>
+                        <button className="btn-primary flex-1 py-2 text-sm flex items-center justify-center gap-1.5" onClick={() => answer(true)}><Check size={13} strokeWidth={3} />Yes</button>
+                        <button className="btn-danger  flex-1 py-2 text-sm flex items-center justify-center gap-1.5" onClick={() => answer(false)}><X     size={13} strokeWidth={3} />No</button>
                       </div>
                     </motion.div>
                   )}
@@ -370,13 +370,13 @@ export default function App() {
                       <div className="pt-2 border-t border-black/5 mb-2">
                         <p className="text-[9px] font-bold uppercase tracking-widest text-black/26 mb-1.5">Log Today's Pill</p>
                         <div className="flex gap-2">
-                          <button className="btn-primary flex-1 py-1.5 text-[11px] flex items-center justify-center gap-1" onClick={() => answer(true)}><Check size={11} strokeWidth={3} />Taken</button>
-                          <button className="btn-danger  flex-1 py-1.5 text-[11px] flex items-center justify-center gap-1" onClick={() => answer(false)}><X     size={11} strokeWidth={3} />Missed</button>
+                          <button className="btn-primary flex-1 py-2 text-sm flex items-center justify-center gap-1.5" onClick={() => answer(true)}><Check size={13} strokeWidth={3} />Taken</button>
+                          <button className="btn-danger  flex-1 py-2 text-sm flex items-center justify-center gap-1.5" onClick={() => answer(false)}><X     size={13} strokeWidth={3} />Missed</button>
                         </div>
                       </div>
                     )}
 
-                    <button className="btn-secondary w-full py-1.5 text-[11px] flex items-center justify-center gap-1.5" onClick={reset}>
+                    <button className="btn-secondary w-full py-2 text-sm flex items-center justify-center gap-1.5" onClick={reset}>
                       <RotateCcw size={11} strokeWidth={2.5} />Reset / Change Setup
                     </button>
                   </div>
