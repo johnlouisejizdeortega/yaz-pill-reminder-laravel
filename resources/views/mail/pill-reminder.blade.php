@@ -13,12 +13,8 @@
       <!-- Header -->
       <table cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
         <tr><td align="center">
-          <div style="width:52px;height:52px;background:#1d1d1f;border-radius:16px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,0.18);">
-            <!-- Lucide Pill icon -->
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m10.5 20.5-8-8a5 5 0 1 1 7-7l8 8a5 5 0 1 1-7 7Z"/>
-              <line x1="8.5" x2="15.5" y1="8.5" y2="15.5"/>
-            </svg>
+          <div style="width:52px;height:52px;background:#1d1d1f;border-radius:16px;line-height:52px;text-align:center;margin:0 auto 14px;box-shadow:0 4px 16px rgba(0,0,0,0.18);font-size:28px;color:#ffffff;">
+            <span style="color:#ffffff;font-size:28px;line-height:52px;">&#128138;</span>
           </div>
           <div style="font-size:22px;font-weight:700;color:#1d1d1f;letter-spacing:-0.5px;display:block;">Pill Alarm</div>
           <div style="font-size:11px;color:rgba(0,0,0,0.38);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;">Yaz · Daily Reminder</div>

@@ -37,12 +37,12 @@ const spring = { type: "spring", stiffness: 320, damping: 32 };
 /* ── sub-components ── */
 function Field({ label, error, children }) {
   return (
-    <div className="mb-3">
-      <Label className="mb-1.5 block text-[10px] font-semibold text-black/40 uppercase tracking-widest">{label}</Label>
+    <div className="mb-2">
+      <Label className="mb-1 block text-[9px] font-semibold text-black/40 uppercase tracking-widest">{label}</Label>
       {children}
       {error && (
         <motion.p initial={{ opacity: 0, y: -3 }} animate={{ opacity: 1, y: 0 }}
-          className="text-[10px] text-black/55 mt-1 font-semibold">{error}</motion.p>
+          className="text-[9px] text-black/55 mt-0.5 font-semibold">{error}</motion.p>
       )}
     </div>
   );
@@ -50,19 +50,19 @@ function Field({ label, error, children }) {
 
 function Row({ label, value }) {
   return (
-    <div className="flex justify-between items-center py-2 border-b border-black/6 last:border-0">
-      <span className="text-[10px] font-semibold text-black/35 uppercase tracking-wider">{label}</span>
-      <span className="text-[11px] font-semibold text-black/75">{value}</span>
+    <div className="flex justify-between items-center py-1 border-b border-black/6 last:border-0">
+      <span className="text-[9px] font-semibold text-black/35 uppercase tracking-wider">{label}</span>
+      <span className="text-[10px] font-semibold text-black/75">{value}</span>
     </div>
   );
 }
 
 function StatusBadge({ taken }) {
   if (taken === true)
-    return <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white rounded-full px-2.5 py-0.5"><Check size={9} strokeWidth={3} />Taken</span>;
+    return <span className="inline-flex items-center gap-1 text-[9px] font-bold bg-black text-white rounded-full px-2 py-0.5"><Check size={8} strokeWidth={3} />Taken</span>;
   if (taken === false)
-    return <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black/8 text-black/55 border border-black/15 rounded-full px-2.5 py-0.5"><X size={9} strokeWidth={3} />Missed</span>;
-  return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-black/5 text-black/38 border border-black/8 rounded-full px-2.5 py-0.5">Pending</span>;
+    return <span className="inline-flex items-center gap-1 text-[9px] font-bold bg-black/8 text-black/55 border border-black/15 rounded-full px-2 py-0.5"><X size={8} strokeWidth={3} />Missed</span>;
+  return <span className="inline-flex items-center gap-1 text-[9px] font-semibold bg-black/5 text-black/38 border border-black/8 rounded-full px-2 py-0.5">Pending</span>;
 }
 
 function PillCell({ d, dayNum, taken }) {
@@ -70,7 +70,7 @@ function PillCell({ d, dayNum, taken }) {
   const t = taken[d];
   const isToday = d === dayNum && t === undefined;
 
-  let cls = "w-8 h-8 flex items-center justify-center rounded-full cursor-default select-none transition-all flex-shrink-0";
+  let cls = "w-6 h-6 flex items-center justify-center rounded-full cursor-default select-none transition-all flex-shrink-0";
   if (t === true)       cls += " bg-black text-white shadow-sm";
   else if (t === false) cls += " bg-black/6 text-black/30 border border-black/12";
   else if (isToday)     cls += " bg-white text-black border-2 border-black pulse-ring";
@@ -85,9 +85,9 @@ function PillCell({ d, dayNum, taken }) {
       whileHover={{ scale: 1.12 }}
       className={cls}
     >
-      {t === true  ? <Check size={13} strokeWidth={3} /> :
-       t === false ? <X     size={12} strokeWidth={3} /> :
-       <span className="text-[10px] font-bold">{d}</span>}
+      {t === true  ? <Check size={11} strokeWidth={3} /> :
+       t === false ? <X     size={10} strokeWidth={3} /> :
+       <span className="text-[9px] font-bold">{d}</span>}
     </motion.div>
   );
 }
@@ -242,49 +242,49 @@ export default function App() {
       >
 
         {/* ── Header ── */}
-        <div className="flex items-center gap-3 px-6 pt-5 pb-4 flex-shrink-0"
+        <div className="flex items-center gap-2 px-4 pt-3 pb-2 flex-shrink-0"
           style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
 
           <motion.div
             animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
             transition={{ repeat: Infinity, duration: 5, repeatDelay: 4 }}
-            className="w-9 h-9 rounded-2xl bg-black flex items-center justify-center flex-shrink-0 shadow-sm"
+            className="w-7 h-7 rounded-xl bg-black flex items-center justify-center flex-shrink-0 shadow-sm"
           >
-            <Pill size={18} color="#fff" strokeWidth={2} />
+            <Pill size={14} color="#fff" strokeWidth={2} />
           </motion.div>
 
           <div>
-            <h1 className="text-base font-bold tracking-tight text-black/88 leading-tight">Pill Alarm</h1>
-            <p className="text-[10px] text-black/35 font-semibold uppercase tracking-widest">Yaz · 8:30 PM Daily</p>
+            <h1 className="text-sm font-bold tracking-tight text-black/88 leading-tight">Pill Alarm</h1>
+            <p className="text-[9px] text-black/35 font-semibold uppercase tracking-widest">Yaz · 8:30 PM Daily</p>
           </div>
 
           {cfg.email && (
             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
-              className="ml-auto glass-inner rounded-xl px-3 py-1.5 flex items-center gap-1.5">
-              <Clock size={11} className="text-black/38" strokeWidth={2.5} />
-              <span className="text-xs font-bold tabular-nums text-black/60 tracking-wide">{timeStr}</span>
+              className="ml-auto glass-inner rounded-lg px-2 py-1 flex items-center gap-1">
+              <Clock size={10} className="text-black/38" strokeWidth={2.5} />
+              <span className="text-[10px] font-bold tabular-nums text-black/60 tracking-wide">{timeStr}</span>
             </motion.div>
           )}
         </div>
 
         {/* ── Content ── */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide">
+        <div className="flex-1 overflow-hidden">
           <AnimatePresence mode="wait">
 
             {/* Setup */}
             {page === "s1" && (
               <motion.div key="s1" variants={slide} initial="initial" animate="animate" exit="exit"
-                transition={spring} className="p-6">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-black/28 mb-0.5">Setup</p>
-                <h2 className="text-xl font-bold tracking-tight text-black/88 mb-5">Schedule &amp; Email</h2>
+                transition={spring} className="p-4">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-black/28 mb-0.5">Setup</p>
+                <h2 className="text-base font-bold tracking-tight text-black/88 mb-3">Schedule &amp; Email</h2>
                 <Field label="Your Name" error={errs.name}><Input type="text" placeholder="Louise" {...fld("name")} /></Field>
                 <Field label="Pill Start Date" error={errs.startDate}><Input type="date" {...fld("startDate")} /></Field>
                 <Field label="Pill End Date" error={errs.endDate}><Input type="date" {...fld("endDate")} /></Field>
                 <Field label="Reminder Email" error={errs.email}><Input type="email" placeholder="you@gmail.com" {...fld("email")} /></Field>
-                <p className="text-[11px] text-black/30 mb-5 leading-relaxed font-medium">
+                <p className="text-[10px] text-black/30 mb-3 leading-snug font-medium">
                   Reminders sent at 8:00, 8:10, 8:20 &amp; 8:30 PM daily — even when this tab is closed.
                 </p>
-                <button className="btn-primary w-full h-11" onClick={activate} disabled={busy}>
+                <button className="btn-primary w-full h-9 text-xs" onClick={activate} disabled={busy}>
                   {busy ? "Activating…" : "Activate Reminder"}
                 </button>
               </motion.div>
@@ -302,82 +302,82 @@ export default function App() {
                       animate={{ opacity: 1, scale: 1,    y: 0  }}
                       exit={{    opacity: 0, scale: 0.90, y: 14 }}
                       transition={{ type: "spring", stiffness: 350, damping: 26 }}
-                      className="m-5 glass-inner rounded-2xl p-6 text-center"
+                      className="m-3 glass-inner rounded-2xl p-4 text-center"
                     >
                       <motion.div
                         animate={{ rotate: [-14, 14, -14, 14, -7, 7, 0] }}
                         transition={{ repeat: Infinity, duration: 0.65, repeatDelay: 1.8 }}
-                        className="flex justify-center mb-3"
+                        className="flex justify-center mb-2"
                       >
-                        <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center shadow-lg">
-                          <Bell size={26} color="#fff" strokeWidth={1.8} />
+                        <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center shadow-lg">
+                          <Bell size={18} color="#fff" strokeWidth={1.8} />
                         </div>
                       </motion.div>
-                      <p className="text-3xl font-bold tracking-tight text-black/88 mb-0.5">8:30 PM</p>
-                      <p className="text-sm text-black/42 font-medium mb-1">Time to take your Yaz pill</p>
-                      <p className="text-xs text-black/26 mb-5">Day {dn} of {tot}</p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-black/30 mb-3">Did you take it?</p>
-                      <div className="flex gap-3">
-                        <button className="btn-primary flex-1 py-3 flex items-center justify-center gap-1.5" onClick={() => answer(true)}><Check size={14} strokeWidth={3} />Yes</button>
-                        <button className="btn-danger  flex-1 py-3 flex items-center justify-center gap-1.5" onClick={() => answer(false)}><X     size={14} strokeWidth={3} />No</button>
+                      <p className="text-xl font-bold tracking-tight text-black/88 mb-0.5">8:30 PM</p>
+                      <p className="text-xs text-black/42 font-medium mb-0.5">Time to take your Yaz pill</p>
+                      <p className="text-[10px] text-black/26 mb-3">Day {dn} of {tot}</p>
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-black/30 mb-2">Did you take it?</p>
+                      <div className="flex gap-2">
+                        <button className="btn-primary flex-1 py-2 text-xs flex items-center justify-center gap-1" onClick={() => answer(true)}><Check size={12} strokeWidth={3} />Yes</button>
+                        <button className="btn-danger  flex-1 py-2 text-xs flex items-center justify-center gap-1" onClick={() => answer(false)}><X     size={12} strokeWidth={3} />No</button>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 {!alarm && (
-                  <div className="p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-black/28 mb-0.5">Dashboard</p>
-                    <h2 className="text-xl font-bold tracking-tight text-black/88 mb-4">Your Progress</h2>
+                  <div className="p-4">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-black/28 mb-0.5">Dashboard</p>
+                    <h2 className="text-base font-bold tracking-tight text-black/88 mb-2">Your Progress</h2>
 
-                    <div className="glass-inner rounded-2xl px-4 py-1 mb-4">
+                    <div className="glass-inner rounded-xl px-3 py-0.5 mb-3">
                       <Row label="Name"  value={cfg.name} />
                       <Row label="Start" value={formatDate(cfg.startDate)} />
                       <Row label="End"   value={formatDate(cfg.endDate)} />
-                      <Row label="Email" value={<span className="text-[10px]">{cfg.email}</span>} />
+                      <Row label="Email" value={<span className="text-[9px]">{cfg.email}</span>} />
                       <Row label="Today" value={`Day ${dn} of ${tot}`} />
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-[10px] font-semibold text-black/35 uppercase tracking-wider">Status</span>
+                      <div className="flex justify-between items-center py-1">
+                        <span className="text-[9px] font-semibold text-black/35 uppercase tracking-wider">Status</span>
                         <StatusBadge taken={todayTaken} />
                       </div>
                     </div>
 
-                    <div className="mb-4">
-                      <div className="flex justify-between text-[10px] font-bold text-black/32 mb-1.5">
+                    <div className="mb-3">
+                      <div className="flex justify-between text-[9px] font-bold text-black/32 mb-1">
                         <span>Course Progress</span><span>{Math.round(pct)}%</span>
                       </div>
-                      <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-black/8">
+                      <div className="relative h-1 w-full overflow-hidden rounded-full bg-black/8">
                         <motion.div className="h-full rounded-full bg-black"
                           initial={{ width: 0 }} animate={{ width: `${pct}%` }}
                           transition={{ type: "spring", stiffness: 60, damping: 18 }} />
                       </div>
                     </div>
 
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-black/26 mb-2">Pill Tracker</p>
-                    <div className="flex flex-wrap gap-1.5 mb-2">
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-black/26 mb-1.5">Pill Tracker</p>
+                    <div className="flex flex-wrap gap-1 mb-2">
                       {Array.from({ length: tot }, (_, i) => i + 1).map(d => (
                         <PillCell key={d} d={d} dayNum={dn} taken={taken} />
                       ))}
                     </div>
-                    <div className="flex flex-wrap gap-4 text-[10px] text-black/30 font-semibold mb-5">
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black inline-block" />Taken</span>
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black/12 border border-black/18 inline-block" />Missed</span>
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full border-2 border-black inline-block" />Today</span>
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black/7 inline-block" />Placebo</span>
+                    <div className="flex flex-wrap gap-3 text-[9px] text-black/30 font-semibold mb-3">
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-black inline-block" />Taken</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-black/12 border border-black/18 inline-block" />Missed</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full border-2 border-black inline-block" />Today</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-black/7 inline-block" />Placebo</span>
                     </div>
 
                     {todayTaken === undefined && (
-                      <div className="pt-4 border-t border-black/5 mb-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-black/26 mb-3">Log Today's Pill</p>
-                        <div className="flex gap-3">
-                          <button className="btn-primary flex-1 py-2.5 flex items-center justify-center gap-1.5" onClick={() => answer(true)}><Check size={13} strokeWidth={3} />Taken</button>
-                          <button className="btn-danger  flex-1 py-2.5 flex items-center justify-center gap-1.5" onClick={() => answer(false)}><X     size={13} strokeWidth={3} />Missed</button>
+                      <div className="pt-2 border-t border-black/5 mb-2">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-black/26 mb-1.5">Log Today's Pill</p>
+                        <div className="flex gap-2">
+                          <button className="btn-primary flex-1 py-1.5 text-[11px] flex items-center justify-center gap-1" onClick={() => answer(true)}><Check size={11} strokeWidth={3} />Taken</button>
+                          <button className="btn-danger  flex-1 py-1.5 text-[11px] flex items-center justify-center gap-1" onClick={() => answer(false)}><X     size={11} strokeWidth={3} />Missed</button>
                         </div>
                       </div>
                     )}
 
-                    <button className="btn-secondary w-full py-2.5 flex items-center justify-center gap-2" onClick={reset}>
-                      <RotateCcw size={13} strokeWidth={2.5} />Reset / Change Setup
+                    <button className="btn-secondary w-full py-1.5 text-[11px] flex items-center justify-center gap-1.5" onClick={reset}>
+                      <RotateCcw size={11} strokeWidth={2.5} />Reset / Change Setup
                     </button>
                   </div>
                 )}
