@@ -5,7 +5,7 @@ const Input = ({ className, type, ...props }) => {
     <input
       type={type}
       className={cn(
-        "glass-input flex h-11 w-full rounded-xl px-4 py-2 text-sm text-black/85 placeholder:text-black/30",
+        "glass-input flex h-8 w-full rounded-lg px-3 py-1 text-xs text-black/85 placeholder:text-black/30",
         className
       )}
       {...props}
