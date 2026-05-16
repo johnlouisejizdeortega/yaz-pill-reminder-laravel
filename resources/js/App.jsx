@@ -21,7 +21,9 @@ function getTotalDays(start, end) {
 function load() {
   try { return JSON.parse(localStorage.getItem("yazv4")) || {}; } catch { return {}; }
 }
-function save(o) { localStorage.setItem("yazv4", JSON.stringify(o)); }
+function save(o) {
+  try { localStorage.setItem("yazv4", JSON.stringify(o)); } catch {}
+}
 function todayStr() { return new Date().toISOString().split("T")[0]; }
 
 /* ── animation presets ── */
@@ -32,7 +34,7 @@ const slide = {
 };
 const spring = { type: "spring", stiffness: 320, damping: 32 };
 
-/* ── small components ── */
+/* ── sub-components ── */
 function Field({ label, error, children }) {
   return (
     <div className="mb-3">
@@ -40,7 +42,7 @@ function Field({ label, error, children }) {
       {children}
       {error && (
         <motion.p initial={{ opacity: 0, y: -3 }} animate={{ opacity: 1, y: 0 }}
-          className="text-[10px] text-black/60 mt-1 font-semibold">{error}</motion.p>
+          className="text-[10px] text-black/55 mt-1 font-semibold">{error}</motion.p>
       )}
     </div>
   );
@@ -57,10 +59,10 @@ function Row({ label, value }) {
 
 function StatusBadge({ taken }) {
   if (taken === true)
-    return <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white rounded-full px-2.5 py-0.5"><Check size={9} strokeWidth={3} /> Taken</span>;
+    return <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black text-white rounded-full px-2.5 py-0.5"><Check size={9} strokeWidth={3} />Taken</span>;
   if (taken === false)
-    return <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black/8 text-black/60 border border-black/15 rounded-full px-2.5 py-0.5"><X size={9} strokeWidth={3} /> Missed</span>;
-  return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-black/5 text-black/40 border border-black/10 rounded-full px-2.5 py-0.5">Pending</span>;
+    return <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-black/8 text-black/55 border border-black/15 rounded-full px-2.5 py-0.5"><X size={9} strokeWidth={3} />Missed</span>;
+  return <span className="inline-flex items-center gap-1 text-[10px] font-semibold bg-black/5 text-black/38 border border-black/8 rounded-full px-2.5 py-0.5">Pending</span>;
 }
 
 function PillCell({ d, dayNum, taken }) {
@@ -69,42 +71,40 @@ function PillCell({ d, dayNum, taken }) {
   const isToday = d === dayNum && t === undefined;
 
   let cls = "w-8 h-8 flex items-center justify-center rounded-full cursor-default select-none transition-all flex-shrink-0";
-
   if (t === true)       cls += " bg-black text-white shadow-sm";
-  else if (t === false) cls += " bg-black/6 text-black/35 border border-black/15";
+  else if (t === false) cls += " bg-black/6 text-black/30 border border-black/12";
   else if (isToday)     cls += " bg-white text-black border-2 border-black pulse-ring";
-  else if (placebo)     cls += " bg-black/8 text-black/40";
-  else                  cls += " bg-black/5 text-black/25";
+  else if (placebo)     cls += " bg-black/7 text-black/35";
+  else                  cls += " bg-black/4 text-black/22";
 
   return (
-    <motion.div
-      layout
+    <motion.div layout
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 400, damping: 22, delay: d * 0.01 }}
       whileHover={{ scale: 1.12 }}
       className={cls}
     >
-      {t === true
-        ? <Check size={13} strokeWidth={3} />
-        : t === false
-          ? <X size={12} strokeWidth={3} />
-          : <span className="text-[10px] font-bold">{d}</span>
-      }
+      {t === true  ? <Check size={13} strokeWidth={3} /> :
+       t === false ? <X     size={12} strokeWidth={3} /> :
+       <span className="text-[10px] font-bold">{d}</span>}
     </motion.div>
   );
 }
 
-/* ── main app ── */
+/* ── main ── */
 export default function App() {
-  const saved      = useRef(load()).current;
+  const savedRef   = useRef(null);
+  if (!savedRef.current) savedRef.current = load();
+  const saved = savedRef.current;
+
   const [page, setPage]   = useState(() => saved.email ? "dash" : "s1");
-  const [cfg, setCfg]     = useState(saved);
+  const [cfg,  setCfg]    = useState(saved);
   const [taken, setTaken] = useState(saved.taken || {});
-  const [now, setNow]     = useState(new Date());
+  const [now,  setNow]    = useState(new Date());
   const [alarm, setAlarm] = useState(false);
-  const [busy, setBusy]   = useState(false);
-  const [errs, setErrs]   = useState({});
+  const [busy,  setBusy]  = useState(false);
+  const [errs,  setErrs]  = useState({});
   const [f, setF] = useState({
     name:      saved.name      || "",
     startDate: saved.startDate || "",
@@ -118,45 +118,39 @@ export default function App() {
     return () => clearInterval(t);
   }, []);
 
-  /* 8:30 PM alarm trigger */
+  /* 8:30 PM alarm */
   useEffect(() => {
     if (!cfg.email) return;
-    const hh = now.getHours(), mm = now.getMinutes(), ss = now.getSeconds();
-    if (hh === 20 && mm === 30 && ss === 0) setAlarm(true);
+    if (now.getHours() === 20 && now.getMinutes() === 30 && now.getSeconds() === 0) setAlarm(true);
   }, [now, cfg.email]);
 
-  /* sync taken logs from backend on mount */
+  /* sync taken logs from backend — never changes page, only enriches taken map */
   useEffect(() => {
-    const email = saved.email;
-    if (!email) return;
+    const { email, startDate, endDate } = saved;
+    if (!email || !startDate || !endDate) return;
     fetch(`/api/status/${encodeURIComponent(email)}`)
-      .then(r => {
-        if (r.status === 404) return "not_found";
-        return r.ok ? r.json() : null;
-      })
+      .then(r => (r.ok ? r.json() : null))
       .then(data => {
-        if (data === "not_found") {
-          /* User not in DB (DB was reset) — keep form pre-filled, ask to re-activate */
-          setPage("s1");
-          return;
-        }
-        if (!data) return; /* server error — leave localStorage as-is */
+        if (!data?.logs) return;
+        const tot = getTotalDays(startDate, endDate);
         const dayMap = {};
-        const tot = getTotalDays(saved.startDate, saved.endDate);
-        Object.entries(data.logs).forEach(([date, takenVal]) => {
-          const s = new Date(saved.startDate + "T00:00:00");
-          const d = new Date(date + "T00:00:00");
-          const dayNum = Math.floor((d - s) / 86400000) + 1;
-          if (dayNum >= 1 && dayNum <= tot) dayMap[dayNum] = takenVal;
+        Object.entries(data.logs).forEach(([date, val]) => {
+          const s   = new Date(startDate + "T00:00:00");
+          const d   = new Date(date       + "T00:00:00");
+          const num = Math.floor((d - s) / 86400000) + 1;
+          if (num >= 1 && num <= tot) dayMap[num] = val;
         });
-        setTaken(dayMap);
-        save({ ...saved, taken: dayMap });
+        setTaken(prev => {
+          const merged = { ...prev, ...dayMap };
+          save({ ...saved, taken: merged });
+          return merged;
+        });
       })
-      .catch(() => {}); /* network error — leave localStorage as-is */
+      .catch(() => {});
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* form helpers */
+  /* validation */
   function validate() {
     const e = {};
     if (!f.name.trim())  e.name = "Required";
@@ -168,53 +162,61 @@ export default function App() {
     return !Object.keys(e).length;
   }
 
+  /* registration — save locally first, then call API */
   async function activate() {
     if (!validate()) return;
     setBusy(true);
+
+    const nc = { name: f.name, email: f.email, startDate: f.startDate, endDate: f.endDate, taken: {} };
+    save(nc);
+    savedRef.current = nc;
+    setCfg(nc);
+    setTaken({});
+    setPage("dash");
+
     try {
-      const res = await fetch("/api/register", {
+      const res  = await fetch("/api/register", {
         method:  "POST",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
         body:    JSON.stringify({ name: f.name, email: f.email, start_date: f.startDate, end_date: f.endDate }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Registration failed");
-      const nc = { name: f.name, email: f.email, startDate: f.startDate, endDate: f.endDate, taken: {} };
-      save(nc);
-      setCfg(nc);
-      setTaken({});
+      if (!res.ok) throw new Error(data.message || "Server error");
       toast.success("Reminders activated — check your email");
-      setPage("dash");
     } catch (err) {
-      toast.error(`Error: ${err.message}`);
+      toast.error(`Email reminders may not work: ${err.message}`);
     } finally {
       setBusy(false);
     }
   }
 
-  async function answer(yes) {
+  /* log pill — optimistic update (save locally first, sync backend after) */
+  function answer(yes) {
     const dn = getDayNum(cfg.startDate);
     setAlarm(false);
-    try {
-      await fetch("/api/log", {
-        method:  "POST",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body:    JSON.stringify({ email: cfg.email, log_date: todayStr(), taken: yes }),
-      });
-      setTaken(prev => {
-        const updated = { ...prev, [dn]: yes };
-        save({ ...cfg, taken: updated });
-        return updated;
-      });
-      toast(yes ? "Logged as taken" : "Logged as missed");
-    } catch {
-      toast.error("Failed to log — try again");
-    }
+
+    /* update locally immediately */
+    setTaken(prev => {
+      const updated = { ...prev, [dn]: yes };
+      save({ ...cfg, taken: updated });
+      savedRef.current = { ...cfg, taken: updated };
+      return updated;
+    });
+    toast(yes ? "Logged as taken" : "Logged as missed");
+
+    /* fire-and-forget sync to backend */
+    fetch("/api/log", {
+      method:  "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body:    JSON.stringify({ email: cfg.email, log_date: todayStr(), taken: yes }),
+    }).catch(() => {});
   }
 
+  /* reset */
   async function reset() {
     await fetch(`/api/reset/${encodeURIComponent(cfg.email)}`, { method: "DELETE" }).catch(() => {});
     localStorage.removeItem("yazv4");
+    savedRef.current = {};
     setCfg({}); setTaken({}); setAlarm(false); setErrs({});
     setF({ name: "", startDate: "", endDate: "", email: "" });
     setPage("s1");
@@ -231,7 +233,6 @@ export default function App() {
   return (
     <div className="fixed inset-0 flex items-center justify-center overflow-hidden">
 
-      {/* 75 vw × 75 vh glass panel */}
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1,    y: 0  }}
@@ -240,7 +241,7 @@ export default function App() {
         style={{ width: "75vw", height: "75vh", minWidth: 300 }}
       >
 
-        {/* ── Header bar ── */}
+        {/* ── Header ── */}
         <div className="flex items-center gap-3 px-6 pt-5 pb-4 flex-shrink-0"
           style={{ borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
 
@@ -253,62 +254,47 @@ export default function App() {
           </motion.div>
 
           <div>
-            <h1 className="text-base font-bold tracking-tight text-black/90 leading-tight">Pill Alarm</h1>
-            <p className="text-[10px] text-black/38 font-semibold uppercase tracking-widest">Yaz · 8:30 PM Daily</p>
+            <h1 className="text-base font-bold tracking-tight text-black/88 leading-tight">Pill Alarm</h1>
+            <p className="text-[10px] text-black/35 font-semibold uppercase tracking-widest">Yaz · 8:30 PM Daily</p>
           </div>
 
           {cfg.email && (
-            <motion.div
-              initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
-              className="ml-auto glass-inner rounded-xl px-3 py-1.5 flex items-center gap-1.5"
-            >
-              <Clock size={11} className="text-black/40" strokeWidth={2.5} />
-              <span className="text-xs font-bold tabular-nums text-black/65 tracking-wide">{timeStr}</span>
+            <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+              className="ml-auto glass-inner rounded-xl px-3 py-1.5 flex items-center gap-1.5">
+              <Clock size={11} className="text-black/38" strokeWidth={2.5} />
+              <span className="text-xs font-bold tabular-nums text-black/60 tracking-wide">{timeStr}</span>
             </motion.div>
           )}
         </div>
 
-        {/* ── Scrollable content ── */}
+        {/* ── Content ── */}
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           <AnimatePresence mode="wait">
 
-            {/* ────── Setup ────── */}
+            {/* Setup */}
             {page === "s1" && (
               <motion.div key="s1" variants={slide} initial="initial" animate="animate" exit="exit"
                 transition={spring} className="p-6">
-
-                <p className="text-[10px] font-bold uppercase tracking-widest text-black/30 mb-0.5">Step 1</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-black/28 mb-0.5">Setup</p>
                 <h2 className="text-xl font-bold tracking-tight text-black/88 mb-5">Schedule &amp; Email</h2>
-
-                <Field label="Your Name" error={errs.name}>
-                  <Input type="text" placeholder="Louise" {...fld("name")} />
-                </Field>
-                <Field label="Pill Start Date" error={errs.startDate}>
-                  <Input type="date" {...fld("startDate")} />
-                </Field>
-                <Field label="Pill End Date" error={errs.endDate}>
-                  <Input type="date" {...fld("endDate")} />
-                </Field>
-                <Field label="Reminder Email" error={errs.email}>
-                  <Input type="email" placeholder="you@gmail.com" {...fld("email")} />
-                </Field>
-
-                <p className="text-[11px] text-black/32 mb-5 leading-relaxed font-medium">
+                <Field label="Your Name" error={errs.name}><Input type="text" placeholder="Louise" {...fld("name")} /></Field>
+                <Field label="Pill Start Date" error={errs.startDate}><Input type="date" {...fld("startDate")} /></Field>
+                <Field label="Pill End Date" error={errs.endDate}><Input type="date" {...fld("endDate")} /></Field>
+                <Field label="Reminder Email" error={errs.email}><Input type="email" placeholder="you@gmail.com" {...fld("email")} /></Field>
+                <p className="text-[11px] text-black/30 mb-5 leading-relaxed font-medium">
                   Reminders sent at 8:00, 8:10, 8:20 &amp; 8:30 PM daily — even when this tab is closed.
                 </p>
-
                 <button className="btn-primary w-full h-11" onClick={activate} disabled={busy}>
                   {busy ? "Activating…" : "Activate Reminder"}
                 </button>
               </motion.div>
             )}
 
-            {/* ────── Dashboard ────── */}
+            {/* Dashboard */}
             {page === "dash" && (
-              <motion.div key="dash" variants={slide} initial="initial" animate="animate" exit="exit"
-                transition={spring}>
+              <motion.div key="dash" variants={slide} initial="initial" animate="animate" exit="exit" transition={spring}>
 
-                {/* Alarm overlay */}
+                {/* Alarm */}
                 <AnimatePresence>
                   {alarm && (
                     <motion.div key="alarm"
@@ -328,30 +314,22 @@ export default function App() {
                         </div>
                       </motion.div>
                       <p className="text-3xl font-bold tracking-tight text-black/88 mb-0.5">8:30 PM</p>
-                      <p className="text-sm text-black/45 font-medium mb-1">Time to take your Yaz pill</p>
-                      <p className="text-xs text-black/28 mb-5">Day {dn} of {tot}</p>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-black/32 mb-3">Did you take your pill?</p>
+                      <p className="text-sm text-black/42 font-medium mb-1">Time to take your Yaz pill</p>
+                      <p className="text-xs text-black/26 mb-5">Day {dn} of {tot}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-black/30 mb-3">Did you take it?</p>
                       <div className="flex gap-3">
-                        <button className="btn-primary flex-1 py-3 flex items-center justify-center gap-1.5"
-                          onClick={() => answer(true)}>
-                          <Check size={14} strokeWidth={3} /> Yes
-                        </button>
-                        <button className="btn-danger flex-1 py-3 flex items-center justify-center gap-1.5"
-                          onClick={() => answer(false)}>
-                          <X size={14} strokeWidth={3} /> No
-                        </button>
+                        <button className="btn-primary flex-1 py-3 flex items-center justify-center gap-1.5" onClick={() => answer(true)}><Check size={14} strokeWidth={3} />Yes</button>
+                        <button className="btn-danger  flex-1 py-3 flex items-center justify-center gap-1.5" onClick={() => answer(false)}><X     size={14} strokeWidth={3} />No</button>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* Main dashboard */}
                 {!alarm && (
                   <div className="p-6">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-black/30 mb-0.5">Dashboard</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-black/28 mb-0.5">Dashboard</p>
                     <h2 className="text-xl font-bold tracking-tight text-black/88 mb-4">Your Progress</h2>
 
-                    {/* Info rows */}
                     <div className="glass-inner rounded-2xl px-4 py-1 mb-4">
                       <Row label="Name"  value={cfg.name} />
                       <Row label="Start" value={formatDate(cfg.startDate)} />
@@ -364,55 +342,42 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Progress bar */}
                     <div className="mb-4">
-                      <div className="flex justify-between text-[10px] font-bold text-black/35 mb-1.5">
+                      <div className="flex justify-between text-[10px] font-bold text-black/32 mb-1.5">
                         <span>Course Progress</span><span>{Math.round(pct)}%</span>
                       </div>
                       <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-black/8">
-                        <motion.div
-                          className="h-full rounded-full bg-black"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${pct}%` }}
-                          transition={{ type: "spring", stiffness: 60, damping: 18 }}
-                        />
+                        <motion.div className="h-full rounded-full bg-black"
+                          initial={{ width: 0 }} animate={{ width: `${pct}%` }}
+                          transition={{ type: "spring", stiffness: 60, damping: 18 }} />
                       </div>
                     </div>
 
-                    {/* Pill grid */}
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-black/28 mb-2">Pill Tracker</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-black/26 mb-2">Pill Tracker</p>
                     <div className="flex flex-wrap gap-1.5 mb-2">
                       {Array.from({ length: tot }, (_, i) => i + 1).map(d => (
                         <PillCell key={d} d={d} dayNum={dn} taken={taken} />
                       ))}
                     </div>
-                    <div className="flex flex-wrap gap-4 text-[10px] text-black/32 font-semibold mb-5">
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black inline-block" /> Taken</span>
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black/15 border border-black/20 inline-block" /> Missed</span>
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full border-2 border-black inline-block" /> Today</span>
-                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black/8 inline-block" /> Placebo</span>
+                    <div className="flex flex-wrap gap-4 text-[10px] text-black/30 font-semibold mb-5">
+                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black inline-block" />Taken</span>
+                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black/12 border border-black/18 inline-block" />Missed</span>
+                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full border-2 border-black inline-block" />Today</span>
+                      <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-black/7 inline-block" />Placebo</span>
                     </div>
 
-                    {/* Log today */}
                     {todayTaken === undefined && (
-                      <div className="pt-4 border-t border-black/6 mb-4">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-black/28 mb-3">Log Today's Pill</p>
+                      <div className="pt-4 border-t border-black/5 mb-4">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-black/26 mb-3">Log Today's Pill</p>
                         <div className="flex gap-3">
-                          <button className="btn-primary flex-1 py-2.5 flex items-center justify-center gap-1.5"
-                            onClick={() => answer(true)}>
-                            <Check size={13} strokeWidth={3} /> Taken
-                          </button>
-                          <button className="btn-danger flex-1 py-2.5 flex items-center justify-center gap-1.5"
-                            onClick={() => answer(false)}>
-                            <X size={13} strokeWidth={3} /> Missed
-                          </button>
+                          <button className="btn-primary flex-1 py-2.5 flex items-center justify-center gap-1.5" onClick={() => answer(true)}><Check size={13} strokeWidth={3} />Taken</button>
+                          <button className="btn-danger  flex-1 py-2.5 flex items-center justify-center gap-1.5" onClick={() => answer(false)}><X     size={13} strokeWidth={3} />Missed</button>
                         </div>
                       </div>
                     )}
 
-                    <button className="btn-secondary w-full py-2.5 flex items-center justify-center gap-2"
-                      onClick={reset}>
-                      <RotateCcw size={13} strokeWidth={2.5} /> Reset / Change Setup
+                    <button className="btn-secondary w-full py-2.5 flex items-center justify-center gap-2" onClick={reset}>
+                      <RotateCcw size={13} strokeWidth={2.5} />Reset / Change Setup
                     </button>
                   </div>
                 )}
