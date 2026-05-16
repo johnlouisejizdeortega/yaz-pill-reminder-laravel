@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ $subject }}</title>
+  <title>{{ $emailSubject }}</title>
 </head>
 <body style="margin:0;padding:0;background:linear-gradient(135deg,#ddeeff 0%,#eeddf8 45%,#f8ddee 100%);min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;">
@@ -24,7 +24,7 @@
 
               <!-- Subject line -->
               <div style="font-size:18px;font-weight:700;color:rgba(0,0,0,0.85);margin-bottom:16px;letter-spacing:-0.3px;">
-                {{ $subject }}
+                {{ $emailSubject }}
               </div>
 
               <!-- Divider -->
