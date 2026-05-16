@@ -24,12 +24,15 @@ class ReminderController extends Controller
             array_merge($data, ['active' => true])
         );
 
-        // Send welcome email
-        Mail::to($reminder->email)->send(new PillReminder(
-            $reminder->name,
-            '✅ Yaz Reminder Active!',
-            "Hi {$reminder->name}!\n\nYour daily 8:30 PM Yaz pill reminders are now active!\n\nStart: {$reminder->start_date->format('M d, Y')}\nEnd: {$reminder->end_date->format('M d, Y')}\n\nReminders: 8:00, 8:10, 8:20, 8:30 PM daily.\n\nStay consistent! 💊"
-        ));
+        try {
+            Mail::to($reminder->email)->send(new PillReminder(
+                $reminder->name,
+                'Yaz Reminder Active',
+                "Hi {$reminder->name}!\n\nYour daily 8:30 PM Yaz pill reminders are now active!\n\nStart: {$reminder->start_date->format('M d, Y')}\nEnd: {$reminder->end_date->format('M d, Y')}\n\nReminders: 8:00, 8:10, 8:20, 8:30 PM daily.\n\nStay consistent!"
+            ));
+        } catch (\Exception $e) {
+            \Log::warning("Welcome email failed for {$reminder->email}: " . $e->getMessage());
+        }
 
         return response()->json(['success' => true, 'reminder' => $reminder]);
     }
@@ -63,17 +66,19 @@ class ReminderController extends Controller
             ['taken' => $data['taken']]
         );
 
-        // Send confirmation email
-        $day   = \Carbon\Carbon::parse($data['log_date'])->format('M d, Y');
-        $taken = $data['taken'];
-
-        Mail::to($reminder->email)->send(new PillReminder(
-            $reminder->name,
-            $taken ? '✅ Pill Taken – Confirmed' : '❌ Pill Missed – Logged',
-            $taken
-                ? "✅ Confirmed: You took your Yaz pill on {$day}. Great job, {$reminder->name}!"
-                : "❌ Missed: You did not take your Yaz pill on {$day}. Consult your doctor if this happens often."
-        ));
+        try {
+            $day   = \Carbon\Carbon::parse($data['log_date'])->format('M d, Y');
+            $taken = $data['taken'];
+            Mail::to($reminder->email)->send(new PillReminder(
+                $reminder->name,
+                $taken ? 'Pill Taken - Confirmed' : 'Pill Missed - Logged',
+                $taken
+                    ? "Confirmed: You took your Yaz pill on {$day}. Great job, {$reminder->name}!"
+                    : "Missed: You did not take your Yaz pill on {$day}. Consult your doctor if this happens often."
+            ));
+        } catch (\Exception $e) {
+            \Log::warning("Log email failed for {$reminder->email}: " . $e->getMessage());
+        }
 
         return response()->json(['success' => true, 'log' => $log]);
     }
