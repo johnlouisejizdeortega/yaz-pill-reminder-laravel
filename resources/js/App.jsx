@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 
 function formatDate(d) {
   if (!d) return "";
@@ -22,21 +21,21 @@ function load() { try { return JSON.parse(localStorage.getItem("yazv4")) || {}; 
 function save(o) { localStorage.setItem("yazv4", JSON.stringify(o)); }
 function todayStr() { return new Date().toISOString().split("T")[0]; }
 
-const pageVariants = {
-  initial: { opacity: 0, y: 24, scale: 0.97 },
+const slide = {
+  initial: { opacity: 0, y: 16, scale: 0.98 },
   animate: { opacity: 1, y: 0,  scale: 1 },
-  exit:    { opacity: 0, y: -24, scale: 0.97 },
+  exit:    { opacity: 0, y: -16, scale: 0.98 },
 };
-const pageTransition = { type: "spring", stiffness: 300, damping: 30 };
+const spring = { type: "spring", stiffness: 320, damping: 30 };
 
 function Field({ label, error, children }) {
   return (
-    <div className="mb-4">
-      <Label className="mb-2 block">{label}</Label>
+    <div className="mb-3">
+      <Label className="mb-1.5 block text-[10px] font-semibold text-black/40 uppercase tracking-widest">{label}</Label>
       {children}
       {error && (
         <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}
-          className="text-[11px] text-[#FF3B30] mt-1.5 font-medium">{error}</motion.p>
+          className="text-[10px] text-[#FF3B30] mt-1 font-medium">{error}</motion.p>
       )}
     </div>
   );
@@ -44,9 +43,9 @@ function Field({ label, error, children }) {
 
 function Row({ label, value }) {
   return (
-    <div className="flex justify-between items-center py-3 border-b border-black/5 last:border-0">
-      <span className="text-xs font-medium text-black/40 uppercase tracking-wider">{label}</span>
-      <span className="text-sm font-semibold text-black/80">{value}</span>
+    <div className="flex justify-between items-center py-2.5 border-b border-black/5 last:border-0">
+      <span className="text-[10px] font-semibold text-black/35 uppercase tracking-wider">{label}</span>
+      <span className="text-xs font-semibold text-black/75">{value}</span>
     </div>
   );
 }
@@ -56,44 +55,24 @@ function PillCell({ d, dayNum, taken }) {
   const t = taken[d];
   const isToday = d === dayNum && t === undefined;
 
-  let cls = "w-9 h-9 flex items-center justify-center text-[11px] font-semibold rounded-full cursor-default select-none transition-all";
-
-  if (t === true)  cls += " bg-[#007AFF] text-white shadow-sm";
-  else if (t === false) cls += " bg-[#FF3B30]/12 text-[#FF3B30] border border-[#FF3B30]/30";
-  else if (isToday) cls += " bg-white/80 text-[#007AFF] border-2 border-[#007AFF] pulse-ring";
-  else if (placebo) cls += " bg-[#FF9500]/12 text-[#FF9500]";
-  else cls += " bg-black/5 text-black/30";
+  let cls = "w-8 h-8 flex items-center justify-center text-[10px] font-bold rounded-full cursor-default select-none transition-all";
+  if (t === true)        cls += " bg-[#007AFF] text-white shadow-sm";
+  else if (t === false)  cls += " bg-[#FF3B30]/10 text-[#FF3B30] border border-[#FF3B30]/30";
+  else if (isToday)      cls += " bg-white/80 text-[#007AFF] border-2 border-[#007AFF] pulse-ring";
+  else if (placebo)      cls += " bg-[#FF9500]/10 text-[#FF9500]";
+  else                   cls += " bg-black/5 text-black/30";
 
   return (
     <motion.div
       layout
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: t !== undefined ? [1, 1.25, 1] : 1, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 400, damping: 20, delay: d * 0.012 }}
-      whileHover={{ scale: 1.15 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 400, damping: 22, delay: d * 0.01 }}
+      whileHover={{ scale: 1.12 }}
       className={cls}
     >
       {t === true ? "✓" : t === false ? "✗" : d}
     </motion.div>
-  );
-}
-
-function Grid({ total, dayNum, taken }) {
-  return (
-    <div className="mt-5">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-black/30 mb-3">Pill Tracker</p>
-      <div className="flex flex-wrap gap-2">
-        {Array.from({ length: total }, (_, i) => i + 1).map(d => (
-          <PillCell key={d} d={d} dayNum={dayNum} taken={taken} />
-        ))}
-      </div>
-      <div className="mt-3 flex flex-wrap gap-3 text-[10px] text-black/35 font-medium">
-        <span><span className="text-[#007AFF]">●</span> Taken</span>
-        <span><span className="text-[#FF3B30]">●</span> Missed</span>
-        <span><span className="text-[#007AFF] opacity-50">○</span> Today</span>
-        <span><span className="text-[#FF9500]">●</span> Placebo (25–28)</span>
-      </div>
-    </div>
   );
 }
 
@@ -113,7 +92,10 @@ export default function App() {
     email:     saved.email     || "",
   });
 
-  useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    const t = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   useEffect(() => {
     if (!cfg.email) return;
@@ -124,8 +106,15 @@ export default function App() {
   useEffect(() => {
     if (!cfg.email) return;
     fetch(`/api/status/${encodeURIComponent(cfg.email)}`)
-      .then(r => r.ok ? r.json() : null)
+      .then(r => {
+        if (r.status === 404) return "not_found";
+        return r.ok ? r.json() : null;
+      })
       .then(data => {
+        if (data === "not_found") {
+          setPage("s1");
+          return;
+        }
         if (!data) return;
         const dayMap = {};
         const tot = getTotalDays(cfg.startDate, cfg.endDate);
@@ -204,129 +193,142 @@ export default function App() {
 
   const fld = (k) => ({ value: f[k], onChange: e => setF(x => ({ ...x, [k]: e.target.value })) });
 
-  const dn  = cfg.startDate ? getDayNum(cfg.startDate) : 0;
-  const tot = cfg.startDate && cfg.endDate ? getTotalDays(cfg.startDate, cfg.endDate) : 28;
-  const pct = tot > 1 ? Math.min(100, Math.max(0, ((dn - 1) / (tot - 1)) * 100)) : 0;
-  const timeStr    = now.toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const dn       = cfg.startDate ? getDayNum(cfg.startDate) : 0;
+  const tot      = cfg.startDate && cfg.endDate ? getTotalDays(cfg.startDate, cfg.endDate) : 28;
+  const pct      = tot > 1 ? Math.min(100, Math.max(0, ((dn - 1) / (tot - 1)) * 100)) : 0;
+  const timeStr  = now.toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const todayTaken = taken[dn];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10">
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden">
 
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 300, damping: 28 }}
-        className="text-center mb-8 w-full max-w-sm">
-        <motion.div
-          animate={{ rotate: [0, -5, 5, -3, 3, 0] }}
-          transition={{ repeat: Infinity, duration: 4, repeatDelay: 3 }}
-          className="text-5xl mb-3">💊</motion.div>
-        <h1 className="text-3xl font-bold tracking-tight text-black/85">Pill Alarm</h1>
-        <p className="text-sm text-black/40 mt-1 font-medium">Yaz · 8:30 PM Daily</p>
+      {/* 75% viewport glass panel */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", stiffness: 260, damping: 28 }}
+        className="glass rounded-3xl flex flex-col overflow-hidden"
+        style={{ width: "75vw", height: "75vh", minWidth: 300 }}
+      >
 
-        {cfg.email && (
-          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            className="mt-4 inline-block glass rounded-2xl px-6 py-2.5">
-            <span className="text-2xl font-bold tracking-widest text-black/80 tabular-nums">{timeStr}</span>
-          </motion.div>
-        )}
-      </motion.div>
+        {/* ── Top bar ── */}
+        <div className="flex items-center gap-3 px-6 pt-5 pb-4 flex-shrink-0"
+          style={{ borderBottom: "1px solid rgba(255,255,255,0.3)" }}>
+          <motion.span
+            animate={{ rotate: [0, -6, 6, -3, 3, 0] }}
+            transition={{ repeat: Infinity, duration: 4, repeatDelay: 3 }}
+            className="text-3xl leading-none"
+          >💊</motion.span>
 
-      {/* Pages */}
-      <div className="w-full max-w-sm">
-        <AnimatePresence mode="wait">
+          <div>
+            <h1 className="text-lg font-bold tracking-tight text-black/85 leading-tight">Pill Alarm</h1>
+            <p className="text-[11px] text-black/40 font-medium">Yaz · 8:30 PM Daily</p>
+          </div>
 
-          {/* Setup */}
-          {page === "s1" && (
-            <motion.div key="s1" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <Card>
-                <CardHeader>
-                  <CardDescription>Setup</CardDescription>
-                  <CardTitle>Schedule & Email</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Field label="Your Name" error={errs.name}>
-                    <Input type="text" placeholder="Louise" {...fld("name")} />
-                  </Field>
-                  <Field label="Pill Start Date" error={errs.startDate}>
-                    <Input type="date" {...fld("startDate")} />
-                  </Field>
-                  <Field label="Pill End Date" error={errs.endDate}>
-                    <Input type="date" {...fld("endDate")} />
-                  </Field>
-                  <Field label="Reminder Email" error={errs.email}>
-                    <Input type="email" placeholder="you@gmail.com" {...fld("email")} />
-                  </Field>
-                  <p className="text-[11px] text-black/35 mb-5 leading-relaxed font-medium">
-                    Reminders sent at 8:00, 8:10, 8:20 & 8:30 PM daily — even when this tab is closed.
-                  </p>
-                  <button className="ios-btn-primary w-full h-12" onClick={activate} disabled={busy}>
-                    {busy ? "Activating…" : "Activate Reminder"}
-                  </button>
-                </CardContent>
-              </Card>
+          {cfg.email && (
+            <motion.div
+              initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+              className="ml-auto glass-inner rounded-2xl px-4 py-2"
+            >
+              <span className="text-sm font-bold tabular-nums text-black/75 tracking-wide">{timeStr}</span>
             </motion.div>
           )}
+        </div>
 
-          {/* Dashboard */}
-          {page === "dash" && (
-            <motion.div key="dash" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+        {/* ── Scrollable content ── */}
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
+          <AnimatePresence mode="wait">
 
-              {/* Alarm overlay */}
-              <AnimatePresence>
-                {alarm && (
-                  <motion.div key="alarm"
-                    initial={{ scale: 0.85, opacity: 0, y: 20 }}
-                    animate={{ scale: 1,    opacity: 1, y: 0 }}
-                    exit={{    scale: 0.85, opacity: 0, y: 20 }}
-                    transition={{ type: "spring", stiffness: 350, damping: 26 }}
-                    className="mb-5">
-                    <Card>
-                      <CardContent className="pt-8 pb-7 text-center">
-                        <motion.div
-                          animate={{ rotate: [-12, 12, -12, 12, -6, 6, 0] }}
-                          transition={{ repeat: Infinity, duration: 0.7, repeatDelay: 1.8 }}
-                          className="text-6xl mb-4">🔔</motion.div>
-                        <p className="text-4xl font-bold tracking-tight text-black/85 mb-1">8:30 PM</p>
-                        <p className="text-sm text-black/45 font-medium mb-1">Time to take your Yaz pill</p>
-                        <p className="text-xs text-black/30 mb-6">Day {dn} of {tot}</p>
-                        <p className="text-xs font-bold uppercase tracking-widest text-black/35 mb-4">Did you take your pill?</p>
-                        <div className="flex gap-3">
-                          <button className="ios-btn-primary flex-1 h-13 py-3" onClick={() => answer(true)}>✓ Yes</button>
-                          <button className="ios-btn-danger flex-1 h-13 py-3" onClick={() => answer(false)}>✗ No</button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+            {/* ── Setup page ── */}
+            {page === "s1" && (
+              <motion.div key="s1" variants={slide} initial="initial" animate="animate" exit="exit"
+                transition={spring} className="p-6">
 
-              {/* Dashboard card */}
-              {!alarm && (
-                <Card>
-                  <CardHeader>
-                    <CardDescription>Dashboard</CardDescription>
-                    <CardTitle>Your Progress</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Row label="Name"  value={cfg.name} />
-                    <Row label="Start" value={formatDate(cfg.startDate)} />
-                    <Row label="End"   value={formatDate(cfg.endDate)} />
-                    <Row label="Email" value={<span className="text-xs">{cfg.email}</span>} />
-                    <Row label="Today" value={`Day ${dn} of ${tot}`} />
-                    <div className="flex justify-between items-center py-3 border-b border-black/5">
-                      <span className="text-xs font-medium text-black/40 uppercase tracking-wider">Status</span>
-                      <Badge variant={todayTaken === true ? "success" : todayTaken === false ? "destructive" : "secondary"}>
-                        {todayTaken === true ? "✓ Taken" : todayTaken === false ? "✗ Missed" : "Pending"}
-                      </Badge>
+                <p className="text-[10px] font-semibold uppercase tracking-widest text-black/35 mb-1">Setup</p>
+                <h2 className="text-xl font-bold tracking-tight text-black/85 mb-5">Schedule & Email</h2>
+
+                <Field label="Your Name" error={errs.name}>
+                  <Input type="text" placeholder="Louise" {...fld("name")} />
+                </Field>
+                <Field label="Pill Start Date" error={errs.startDate}>
+                  <Input type="date" {...fld("startDate")} />
+                </Field>
+                <Field label="Pill End Date" error={errs.endDate}>
+                  <Input type="date" {...fld("endDate")} />
+                </Field>
+                <Field label="Reminder Email" error={errs.email}>
+                  <Input type="email" placeholder="you@gmail.com" {...fld("email")} />
+                </Field>
+
+                <p className="text-[11px] text-black/35 mb-5 leading-relaxed font-medium">
+                  Reminders sent at 8:00, 8:10, 8:20 &amp; 8:30 PM daily — even when this tab is closed.
+                </p>
+
+                <button className="ios-btn-primary w-full h-11" onClick={activate} disabled={busy}>
+                  {busy ? "Activating…" : "Activate Reminder"}
+                </button>
+              </motion.div>
+            )}
+
+            {/* ── Dashboard ── */}
+            {page === "dash" && (
+              <motion.div key="dash" variants={slide} initial="initial" animate="animate" exit="exit"
+                transition={spring}>
+
+                {/* Alarm overlay */}
+                <AnimatePresence>
+                  {alarm && (
+                    <motion.div key="alarm"
+                      initial={{ opacity: 0, scale: 0.88, y: 16 }}
+                      animate={{ opacity: 1, scale: 1,    y: 0 }}
+                      exit={{    opacity: 0, scale: 0.88, y: 16 }}
+                      transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                      className="m-5 glass-inner rounded-2xl p-6 text-center"
+                    >
+                      <motion.div
+                        animate={{ rotate: [-12, 12, -12, 12, -6, 6, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.7, repeatDelay: 1.8 }}
+                        className="text-5xl mb-3"
+                      >🔔</motion.div>
+                      <p className="text-3xl font-bold tracking-tight text-black/85 mb-0.5">8:30 PM</p>
+                      <p className="text-sm text-black/45 font-medium mb-1">Time to take your Yaz pill</p>
+                      <p className="text-xs text-black/30 mb-5">Day {dn} of {tot}</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-black/35 mb-3">Did you take your pill?</p>
+                      <div className="flex gap-3">
+                        <button className="ios-btn-primary flex-1 py-3" onClick={() => answer(true)}>✓ Yes</button>
+                        <button className="ios-btn-danger flex-1 py-3" onClick={() => answer(false)}>✗ No</button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Info + tracker */}
+                {!alarm && (
+                  <div className="p-6">
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-black/35 mb-1">Dashboard</p>
+                    <h2 className="text-xl font-bold tracking-tight text-black/85 mb-4">Your Progress</h2>
+
+                    {/* Info rows */}
+                    <div className="glass-inner rounded-2xl px-4 py-1 mb-4">
+                      <Row label="Name"  value={cfg.name} />
+                      <Row label="Start" value={formatDate(cfg.startDate)} />
+                      <Row label="End"   value={formatDate(cfg.endDate)} />
+                      <Row label="Email" value={<span className="text-[10px]">{cfg.email}</span>} />
+                      <Row label="Today" value={`Day ${dn} of ${tot}`} />
+                      <div className="flex justify-between items-center py-2.5">
+                        <span className="text-[10px] font-semibold text-black/35 uppercase tracking-wider">Status</span>
+                        <Badge variant={todayTaken === true ? "success" : todayTaken === false ? "destructive" : "secondary"}>
+                          {todayTaken === true ? "✓ Taken" : todayTaken === false ? "✗ Missed" : "Pending"}
+                        </Badge>
+                      </div>
                     </div>
 
                     {/* Progress bar */}
-                    <div className="mt-4 mb-1">
-                      <div className="flex justify-between text-[11px] font-semibold text-black/35 mb-2">
+                    <div className="mb-4">
+                      <div className="flex justify-between text-[10px] font-semibold text-black/35 mb-1.5">
                         <span>Progress</span><span>{Math.round(pct)}%</span>
                       </div>
-                      <div className="relative h-2 w-full overflow-hidden rounded-full bg-black/6">
+                      <div className="relative h-2 w-full overflow-hidden rounded-full bg-black/8">
                         <motion.div
                           className="h-full rounded-full"
                           style={{ background: "linear-gradient(90deg, #007AFF, #34C8FF)" }}
@@ -337,29 +339,42 @@ export default function App() {
                       </div>
                     </div>
 
-                    <Grid total={tot} dayNum={dn} taken={taken} />
+                    {/* Pill grid */}
+                    <p className="text-[10px] font-semibold uppercase tracking-widest text-black/30 mb-2">Pill Tracker</p>
+                    <div className="flex flex-wrap gap-1.5 mb-3">
+                      {Array.from({ length: tot }, (_, i) => i + 1).map(d => (
+                        <PillCell key={d} d={d} dayNum={dn} taken={taken} />
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-3 text-[10px] text-black/35 font-medium mb-5">
+                      <span><span className="text-[#007AFF]">●</span> Taken</span>
+                      <span><span className="text-[#FF3B30]">●</span> Missed</span>
+                      <span><span className="text-[#007AFF] opacity-50">○</span> Today</span>
+                      <span><span className="text-[#FF9500]">●</span> Placebo (25–28)</span>
+                    </div>
 
+                    {/* Log today */}
                     {todayTaken === undefined && (
-                      <div className="mt-6 pt-5 border-t border-black/5">
+                      <div className="pt-4 border-t border-black/6 mb-4">
                         <p className="text-[10px] font-semibold uppercase tracking-widest text-black/30 mb-3">Log Today's Pill</p>
                         <div className="flex gap-3">
-                          <button className="ios-btn-primary flex-1 py-3" onClick={() => answer(true)}>✓ Taken</button>
-                          <button className="ios-btn-danger flex-1 py-3" onClick={() => answer(false)}>✗ Missed</button>
+                          <button className="ios-btn-primary flex-1 py-2.5" onClick={() => answer(true)}>✓ Taken</button>
+                          <button className="ios-btn-danger flex-1 py-2.5" onClick={() => answer(false)}>✗ Missed</button>
                         </div>
                       </div>
                     )}
 
-                    <button className="ios-btn-secondary w-full py-3 mt-4 text-sm" onClick={reset}>
+                    <button className="ios-btn-secondary w-full py-2.5 text-sm" onClick={reset}>
                       Reset / Change Setup
                     </button>
-                  </CardContent>
-                </Card>
-              )}
-            </motion.div>
-          )}
+                  </div>
+                )}
+              </motion.div>
+            )}
 
-        </AnimatePresence>
-      </div>
+          </AnimatePresence>
+        </div>
+      </motion.div>
     </div>
   );
 }

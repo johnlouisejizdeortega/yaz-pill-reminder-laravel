@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::dropIfExists('reminders');
+        if (Schema::hasTable('reminders')) return;
         Schema::create('reminders', function (Blueprint $table) {
             $table->id();
             $table->string('name');
