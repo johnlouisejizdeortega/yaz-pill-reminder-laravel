@@ -37,12 +37,12 @@ const spring = { type: "spring", stiffness: 320, damping: 32 };
 /* ── sub-components ── */
 function Field({ label, error, children }) {
   return (
-    <div className="mb-2">
-      <Label className="mb-1 block text-[9px] font-semibold text-black/40 uppercase tracking-widest">{label}</Label>
+    <div className="mb-3">
+      <Label className="mb-1.5 block text-[9px] font-semibold text-black/40 uppercase tracking-widest">{label}</Label>
       {children}
       {error && (
         <motion.p initial={{ opacity: 0, y: -3 }} animate={{ opacity: 1, y: 0 }}
-          className="text-[9px] text-black/55 mt-0.5 font-semibold">{error}</motion.p>
+          className="text-[9px] text-black/55 mt-1 font-semibold">{error}</motion.p>
       )}
     </div>
   );
@@ -50,9 +50,9 @@ function Field({ label, error, children }) {
 
 function Row({ label, value }) {
   return (
-    <div className="flex justify-between items-center py-1 border-b border-black/6 last:border-0">
-      <span className="text-[9px] font-semibold text-black/35 uppercase tracking-wider">{label}</span>
-      <span className="text-[10px] font-semibold text-black/75">{value}</span>
+    <div className="flex justify-between items-center gap-2 py-1 border-b border-black/6 last:border-0">
+      <span className="text-[9px] font-semibold text-black/35 uppercase tracking-wider flex-shrink-0">{label}</span>
+      <span className="text-[10px] font-semibold text-black/75 text-right min-w-0 break-words">{value}</span>
     </div>
   );
 }
@@ -231,14 +231,14 @@ export default function App() {
   const todayTaken = taken[dn];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden p-4">
 
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1,    y: 0  }}
         transition={{ type: "spring", stiffness: 260, damping: 28 }}
-        className="glass rounded-3xl flex flex-col overflow-hidden"
-        style={{ width: "75vw", height: "75vh", minWidth: 300 }}
+        className="glass rounded-3xl flex flex-col overflow-hidden w-full max-w-md"
+        style={{ maxHeight: "calc(100vh - 2rem)" }}
       >
 
         {/* ── Header ── */}
@@ -253,14 +253,14 @@ export default function App() {
             <Pill size={14} color="#fff" strokeWidth={2} />
           </motion.div>
 
-          <div>
+          <div className="min-w-0 flex-1">
             <h1 className="text-sm font-bold tracking-tight text-black/88 leading-tight">Pill Alarm</h1>
             <p className="text-[9px] text-black/35 font-semibold uppercase tracking-widest">Yaz · 8:30 PM Daily</p>
           </div>
 
           {cfg.email && (
             <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
-              className="ml-auto glass-inner rounded-lg px-2 py-1 flex items-center gap-1">
+              className="ml-auto glass-inner rounded-lg px-2 py-1 flex items-center gap-1 flex-shrink-0">
               <Clock size={10} className="text-black/38" strokeWidth={2.5} />
               <span className="text-[10px] font-bold tabular-nums text-black/60 tracking-wide">{timeStr}</span>
             </motion.div>
@@ -268,7 +268,7 @@ export default function App() {
         </div>
 
         {/* ── Content ── */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide min-h-0">
           <AnimatePresence mode="wait">
 
             {/* Setup */}
@@ -334,7 +334,7 @@ export default function App() {
                       <Row label="Name"  value={cfg.name} />
                       <Row label="Start" value={formatDate(cfg.startDate)} />
                       <Row label="End"   value={formatDate(cfg.endDate)} />
-                      <Row label="Email" value={<span className="text-[9px]">{cfg.email}</span>} />
+                      <Row label="Email" value={<span className="text-[9px] break-all">{cfg.email}</span>} />
                       <Row label="Today" value={`Day ${dn} of ${tot}`} />
                       <div className="flex justify-between items-center py-1">
                         <span className="text-[9px] font-semibold text-black/35 uppercase tracking-wider">Status</span>
