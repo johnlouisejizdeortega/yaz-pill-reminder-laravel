@@ -15,7 +15,7 @@ class PillReminder extends Mailable
     public function __construct(
         public string $name,
         public string $emailSubject,
-        public string $message,
+        public string $body,
     ) {}
 
     public function envelope(): Envelope

@@ -31,7 +31,7 @@
               <div style="height:1px;background:rgba(0,0,0,0.06);margin-bottom:20px;"></div>
 
               <!-- Message body -->
-              <div style="font-size:15px;color:rgba(0,0,0,0.65);line-height:1.75;white-space:pre-line;">{{ $message }}</div>
+              <div style="font-size:15px;color:rgba(0,0,0,0.65);line-height:1.75;white-space:pre-line;">{{ $body }}</div>
 
               <!-- CTA Button -->
               <div style="margin-top:28px;text-align:center;">
