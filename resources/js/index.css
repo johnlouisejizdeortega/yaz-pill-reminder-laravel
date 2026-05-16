@@ -49,8 +49,6 @@
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(0, 0, 0, 0.10);
     transition: all 0.18s ease;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
   }
   .glass-input:focus {
     background: rgba(255, 255, 255, 0.92);
@@ -72,8 +70,6 @@
     border: none;
     cursor: pointer;
     min-height: 44px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
   }
   .btn-primary:hover  { background: #333; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.30); }
   .btn-primary:active { transform: scale(0.97); }
@@ -92,8 +88,6 @@
     transition: all 0.15s ease;
     cursor: pointer;
     min-height: 44px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
   }
   .btn-secondary:hover  { background: rgba(255, 255, 255, 0.85); }
   .btn-secondary:active { transform: scale(0.97); }
@@ -109,11 +103,15 @@
     transition: all 0.15s ease;
     cursor: pointer;
     min-height: 44px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
   }
   .btn-danger:hover  { background: rgba(0, 0, 0, 0.10); }
   .btn-danger:active { transform: scale(0.97); }
+
+  /* Shared mobile interaction resets — eliminates 300ms tap delay and grey iOS tap flash */
+  .btn-primary, .btn-secondary, .btn-danger, .glass-input {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
 
   /* Hide scrollbar */
   .scrollbar-hide::-webkit-scrollbar { display: none; }
