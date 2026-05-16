@@ -39,9 +39,9 @@
 
             <!-- CTA -->
             <div style="margin-top:32px;text-align:center;">
-              <span style="display:inline-block;background:#1d1d1f;color:#ffffff;font-size:14px;font-weight:600;padding:13px 30px;border-radius:12px;letter-spacing:-0.1px;box-shadow:0 4px 14px rgba(0,0,0,0.22);">
+              <a href="{{ url('/') }}" target="_blank" style="display:inline-block;background:#1d1d1f;color:#ffffff;font-size:14px;font-weight:600;padding:13px 30px;border-radius:12px;letter-spacing:-0.1px;box-shadow:0 4px 14px rgba(0,0,0,0.22);text-decoration:none;">
                 Open Pill Alarm
-              </span>
+              </a>
             </div>
 
           </td>
