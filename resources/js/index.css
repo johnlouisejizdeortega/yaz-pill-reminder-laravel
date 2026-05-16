@@ -1,25 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #f0f4ff;
-  --color-foreground: rgba(0, 0, 0, 0.85);
-  --color-card: rgba(255, 255, 255, 0.65);
-  --color-card-foreground: rgba(0, 0, 0, 0.85);
-  --color-border: rgba(255, 255, 255, 0.75);
-  --color-input: rgba(255, 255, 255, 0.4);
-  --color-ring: #007AFF;
-  --color-primary: #007AFF;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: rgba(255, 255, 255, 0.5);
-  --color-secondary-foreground: rgba(0, 0, 0, 0.6);
-  --color-muted: rgba(0, 0, 0, 0.04);
-  --color-muted-foreground: rgba(0, 0, 0, 0.45);
-  --color-destructive: #FF3B30;
-  --color-destructive-foreground: #ffffff;
-  --color-success: #34C759;
-  --color-warning: #FF9500;
-  --radius: 1rem;
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
 }
 
 @layer base {
@@ -32,99 +14,105 @@
 
   body {
     font-family: var(--font-sans);
-    background: linear-gradient(135deg, #c8deff 0%, #e4d0ff 45%, #ffd6ee 100%);
-    color: rgba(0, 0, 0, 0.85);
+    background: linear-gradient(145deg, #ffffff 0%, #d1d1d6 40%, #e5e5ea 70%, #f2f2f7 100%);
+    color: #1d1d1f;
     -webkit-font-smoothing: antialiased;
   }
 }
 
 @layer utilities {
+  /* Main glass panel */
   .glass {
-    background: rgba(255, 255, 255, 0.62);
-    backdrop-filter: blur(28px) saturate(200%);
-    -webkit-backdrop-filter: blur(28px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.80);
+    background: rgba(255, 255, 255, 0.70);
+    backdrop-filter: blur(32px) saturate(180%);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
     box-shadow:
-      0 12px 40px rgba(0, 0, 0, 0.10),
-      0 2px 8px rgba(0, 0, 0, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      0 16px 48px rgba(0, 0, 0, 0.12),
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
   }
 
+  /* Nested glass surfaces */
   .glass-inner {
-    background: rgba(255, 255, 255, 0.45);
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.65);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.50);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.70);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 8px rgba(0,0,0,0.04);
   }
 
+  /* Input */
   .glass-input {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.55);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    transition: all 0.18s ease;
   }
   .glass-input:focus {
-    background: rgba(255, 255, 255, 0.88);
-    border-color: #007AFF;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.18);
+    background: rgba(255, 255, 255, 0.92);
+    border-color: #1d1d1f;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.10);
     outline: none;
   }
 
-  .ios-btn-primary {
-    background: #007AFF;
-    color: #fff;
-    border-radius: 14px;
+  /* Black primary button */
+  .btn-primary {
+    background: #1d1d1f;
+    color: #ffffff;
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 14px;
-    letter-spacing: -0.2px;
+    font-size: 13px;
+    letter-spacing: -0.1px;
     transition: all 0.15s ease;
-    box-shadow: 0 4px 14px rgba(0, 122, 255, 0.38);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
     border: none;
     cursor: pointer;
   }
-  .ios-btn-primary:hover  { background: #0062CC; box-shadow: 0 6px 18px rgba(0, 122, 255, 0.48); }
-  .ios-btn-primary:active { transform: scale(0.97); }
-  .ios-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary:hover  { background: #333; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.30); }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .ios-btn-secondary {
-    background: rgba(255, 255, 255, 0.55);
+  /* Ghost secondary button */
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.60);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    color: #007AFF;
-    border: 1px solid rgba(0, 122, 255, 0.25);
-    border-radius: 14px;
+    color: #1d1d1f;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     transition: all 0.15s ease;
     cursor: pointer;
   }
-  .ios-btn-secondary:hover  { background: rgba(255, 255, 255, 0.82); }
-  .ios-btn-secondary:active { transform: scale(0.97); }
+  .btn-secondary:hover  { background: rgba(255, 255, 255, 0.85); }
+  .btn-secondary:active { transform: scale(0.97); }
 
-  .ios-btn-danger {
-    background: rgba(255, 59, 48, 0.10);
-    color: #FF3B30;
-    border: 1px solid rgba(255, 59, 48, 0.28);
-    border-radius: 14px;
+  /* Outline danger button */
+  .btn-danger {
+    background: rgba(0, 0, 0, 0.05);
+    color: #1d1d1f;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     transition: all 0.15s ease;
     cursor: pointer;
   }
-  .ios-btn-danger:hover  { background: rgba(255, 59, 48, 0.18); }
-  .ios-btn-danger:active { transform: scale(0.97); }
+  .btn-danger:hover  { background: rgba(0, 0, 0, 0.10); }
+  .btn-danger:active { transform: scale(0.97); }
 
+  /* Hide scrollbar */
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-  .pulse-ring {
-    animation: pulse-ring 2s ease-out infinite;
-  }
+  /* Today ring pulse */
+  .pulse-ring { animation: pulse-ring 2.2s ease-out infinite; }
   @keyframes pulse-ring {
-    0%   { box-shadow: 0 0 0 0    rgba(0, 122, 255, 0.5); }
-    70%  { box-shadow: 0 0 0 10px rgba(0, 122, 255, 0);   }
-    100% { box-shadow: 0 0 0 0    rgba(0, 122, 255, 0);   }
+    0%   { box-shadow: 0 0 0 0    rgba(29, 29, 31, 0.40); }
+    70%  { box-shadow: 0 0 0 8px  rgba(29, 29, 31, 0);    }
+    100% { box-shadow: 0 0 0 0    rgba(29, 29, 31, 0);    }
   }
 }
